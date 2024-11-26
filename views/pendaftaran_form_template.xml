@@ -1,0 +1,1375 @@
+<odoo>
+
+    <template id="pendaftaran_form_template" name="Pendaftaran Form">
+        <t t-call="web.html_container">
+            <t t-set="title">Pendaftaran - Daarul Qur'an Istiqomah</t>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css"/>
+            <style>
+                .main-container {
+                    background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+                }
+
+                .offcanvas.offcanvas-end {
+                    width: 250px; /* Lebar kustom untuk offcanvas */
+                }
+                
+                .offcanvas .nav-link {
+                    color: #ffffff; /* teks warna putih */
+                }
+                
+                .offcanvas .btn-close {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    filter: invert(1);
+                }
+
+                .step {
+                    padding: 10px 30px;
+                    border-radius: 5px;
+                }
+
+                .step.active {
+                    box-shadow: 0 3px 20px rgba(0,0,0,0.5);
+                    background-color: #FD0870;
+                    color: white;
+                }
+
+                .disabled {
+                    cursor: not-allowed !important;
+                }
+
+                .background {
+					    background: linear-gradient(to bottom left, #065c5c 18%, #f5e505 100%) !important;
+				}
+
+                a.effect {
+                    transition: .1s !important;
+                }
+
+                a.effect:hover {
+                    box-shadow: 0 3px 10px rgba(0,0,0,0.2) !important;
+                }
+
+                .fl-label {
+                position: relative;
+                margin-bottom: 20px;
+                }
+
+                .fl-label input {
+                width: 100%;
+                padding: 8px 0;
+                border: none;
+                outline: none;
+                border-bottom: 1.5px solid #A5A0A0;
+                font-size: 16px;
+                transition: border-color 0.3s;
+                box-shadow: 0px 4px 4px -4px rgba(0, 0, 0, 0.5);
+                }
+
+                .fl-label textarea {
+                width: 100%;
+                padding: 8px 0;
+                border: none;
+                outline: none;
+                border-bottom: 1.5px solid #A5A0A0;
+                font-size: 16px;
+                resize: none;
+                transition: border-color 0.3s;
+                box-shadow: 0px 4px 4px -4px rgba(0, 0, 0, 0.5);
+                }
+
+                .fl-label select {
+                width: 100%;
+                padding: 8px 0;
+                border: none;
+                outline: none;
+                border-bottom: 1.5px solid #A5A0A0;
+                font-size: 16px;
+                appearance: none;
+                background: none;
+                transition: border-color 0.3s;
+                }
+
+                .fl-label input[type="file"] {
+                width: 100%;
+                padding: 8px 0;
+                border: none;
+                outline: none;
+                border-bottom: 1.5px solid #A5A0A0;
+                font-size: 16px;
+                color: #A5A0A0;
+                transition: border-color 0.3s;
+                }
+
+                
+                .fl-label input:focus, .fl-label textarea:focus, .fl-label select:focus, .fl-label input[type="file"]:focus {
+                border-bottom: 1.5px solid #FD0870;
+                }
+
+                
+                .fl-label label {
+                position: absolute;
+                top: 0;
+                left: 0;
+                padding: 8px 0;
+                color: #A5A0A0;
+                font-size: 16px;
+                pointer-events: none;
+                transition: transform 0.2s ease-in-out, color 0.2s;
+                transform-origin: left top;
+                transform: translateY(0);
+                white-space: nowrap;
+                }
+
+                
+                .fl-label input:focus::placeholder, .fl-label textarea:focus::placeholder {
+                color: transparent;
+                }
+
+                .fl-label input:focus + label,
+                .fl-label input:not(:placeholder-shown) + label,
+                .fl-label textarea:focus + label,
+                .fl-label textarea:not(:placeholder-shown) + label,
+                .fl-label select:focus + label,
+                .fl-label select:not([value=""]) + label,
+                .fl-label input[type="file"]:focus + label,
+                .fl-label input[type="file"]:valid + label {
+                transform: translateY(-24px);
+                font-size: 12px;
+                color: #FD0870;
+                }
+
+                .fl-label input:not(:focus):placeholder-shown + label,
+                .fl-label textarea:not(:focus):placeholder-shown + label, {
+                transform: translateY(0);
+                font-size: 16px;
+                color: #A5A0A0;
+                }
+
+                /* Warna label berubah menjadi hitam saat input sudah diisi */
+                .fl-label input:not(:placeholder-shown) + label,
+                .fl-label textarea:not(:placeholder-shown) + label {
+                color: #000; /* Warna hitam */
+                }
+
+                .fl-label label#labelKwAyah, .fl-label label#labelKwAnak, .fl-label label#labelKwIbu {
+                    color: #000 !important;
+                }
+
+                /* Desain Dropdown */
+                .dropdown {
+                    position: relative;
+                }
+
+                .dropdown-link {
+                    cursor: pointer;
+                }
+
+                .dropdown-content {
+                    display: none;
+                    position: absolute;
+                    top: 100%;
+                    right: 0;
+                    background-color: #ffffff;
+                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+                    border-radius: 5px;
+                    min-width: 150px;
+                    z-index: 1;
+                    overflow: hidden;
+                }
+
+                .dropdown-content a {
+                    color: #333;
+                    padding: 10px 15px;
+                    display: block;
+                    text-decoration: none;
+                    transition: background-color 0.2s;
+                }
+
+                .dropdown-content a:hover {
+                    background-color: #f1f1f1;
+                }
+
+                /* Menampilkan dropdown saat hover */
+                .dropdown:hover .dropdown-content {
+                    display: block;
+                    animation: fadeIn 0.3s;
+                }
+
+                /* Animasi fade-in */
+                @keyframes fadeIn {
+                    from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                    }
+                    to {
+                    opacity: 1;
+                    transform: translateY(0);
+                    }
+                }
+                
+
+            </style>
+            <div class="main-container">
+            <nav class="navbar navbar-expand-lg" style="height: 65px;">
+                <div class="container-fluid">
+                    <a class="navbar-brand ms-5 fw-semibold" href="/psb" style="color: white !important;">
+                    	<img src="https://i.ibb.co.com/f9j819p/1731466812700.png" width="50" alt="Logo Pesantren"/>       
+                        Daarul Qur'an Istiqomah
+                	</a>
+                    <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item me-3">
+                                <a class="nav-link" style="color: white !important;" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                            </li>
+                            <li class="nav-item me-3">
+                                <a class="nav-link" style="color: white !important;" href="/pendaftaran"><i class="fa-solid fa-note-sticky me-2"></i>Pendaftaran</a>
+                            </li>
+                            <li class="nav-item me-3">
+                                <a class="nav-link" style="color: white !important;" href="/web/login"><i class="fa-solid fa-fingerprint me-2"></i>Login</a>
+                            </li>
+                            <li class="nav-item me-3">
+                                <a class="nav-link" style="color: white !important;" href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="dropdown-link nav-link" style="color: white !important;"><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>
+                                <div class="dropdown-content">
+                                    <a href="/pengumuman/sd-mi">SD / MI</a>
+                                    <a href="/pengumuman/smp-mts">SMP / MTS</a>
+                                    <a href="/pengumuman/sma-ma">SMA / MA</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="offcanvas offcanvas-end background" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                <a class="navbar-brand mt-1 fw-semibold" href="/psb" style="display: flex; flex-direction: column; align-items: center; color: white !important;">
+                    <img src="https://i.ibb.co.com/f9j819p/1731466812700.png" width="50" alt="Logo Pesantren"/>
+                    Daarul Qur'an Istiqomah
+                </a>
+                <div class="offcanvas-body">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item me-3">
+                                <a class="nav-link" style="color: white !important;" href="/psb"><i class="fa-solid fa-house me-2"></i>Beranda</a>
+                            </li>
+                            <li class="nav-item me-3">
+                                <a class="nav-link text-white" href="/psb"><i class="fa-solid fa-note-sticky me-2"></i>Pendaftaran</a>
+                            </li>
+                            <li class="nav-item me-3">
+                                <a class="nav-link" style="color: white !important;" href="/web/login"><i class="fa-solid fa-fingerprint me-2"></i>Login</a>
+                            </li>
+                            <li class="nav-item me-3">
+                                <a class="nav-link text-white" href="/bantuan"><i class="fa-solid fa-lock me-2"></i>Bantuan</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="dropdown-link nav-link" style="color: white !important;"><i class="fa-solid fa-bullhorn me-2"></i>Pengumuman</a>
+                                <div class="dropdown-content">
+                                    <a href="/pengumuman/sd-mi">SD / MI</a>
+                                    <a href="/pengumuman/smp-mts">SMP / MTS</a>
+                                    <a href="/pengumuman/sma-ma">SMA / MA</a>
+                                </div>
+                            </li>
+                        </ul>
+                </div>
+            </div>
+
+            <!-- <div class="container mt-5">
+                <h2>Form Pendaftaran Santri</h2>
+                <form action="/pendaftaran/submit" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="form-group">
+                        <label for="nama">Nama Lengkap</label>
+                        <input type="text" name="nama" id="nama"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="nik">NIK</label>
+                        <input type="text" name="nik" id="nik"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" id="email"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="nomor_hp">Nomor HP</label>
+                        <input type="text" name="nomor_hp" id="nomor_hp"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="jenjang_id">Jenjang Pendidikan</label>
+                        <select name="jenjang_id" id="jenjang_id">
+                            <option value="">Pilih Jenjang</option>
+                            <t t-foreach="pendidikan_list" t-as="pendidikan">
+                                <option t-att-value="pendidikan.id"><t t-esc="pendidikan.name"/></option>
+                            </t>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="gender">Jenis Kelamin</label>
+                        <select name="gender" id="gender">
+                            <option value="l">Laki-laki</option>
+                            <option value="p">Perempuan</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="kota_lahir">Kota Lahir</label>
+                        <input type="text" name="kota_lahir" id="kota_lahir"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="tanggal_lahir">Tanggal Lahir</label>
+                        <input type="date" name="tanggal_lahir" id="tanggal_lahir"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="alamat">Alamat</label>
+                        <textarea name="alamat" id="alamat"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Daftar</button>
+                </form>
+            </div> -->
+            <div class="text-center mt-5" style="color: white !important;">
+                <h3 class="fw-semibold" style="color: white !important;">Form Pendaftaran Santri Baru</h3>
+                <span>Isikan data sesuai dengan kolom yang ada dengan komplit dan benar.</span>
+            </div>
+            <form action="/pendaftaran/submit" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <div class="container" id="containerDataUsername">
+                <div style="max-width: 100%;" class="bg-white rounded mt-4 p-3 mb-5">
+                    <div class="step-indicator mb-3" style="background-color: #EAE7E7; padding: 0px 30px; display: flex; justify-content: space-between; flex-wrap: wrap;">
+                        <span class="text-uppercase fw-semibold step active" style="font-size: 13px;">Data Login</span>
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Santri</span>
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Orang Tua</span>
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Sekolah Asal</span>
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Berkas</span>
+                    </div>
+                <h4 class="fw-semibold fs-3 mb-4">Data Login</h4>
+                <div>
+                    <div class="row">
+                        <div class="col-md-12">
+                        <div class="fl-label">
+                        <input type="email" name="email" id="email" placeholder="Email" required="true" autocomplete="off"/>
+                        <label for="email">Email</label>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                        <div class="fl-label">
+                        <input type="password" name="password" id="password" placeholder="Kata Sandi" required="true" autocomplete="off"/>
+                        <label for="password">Kata Sandi</label>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-md-12">
+                        <div class="fl-label">
+                        <select required="true" name="jenjang_id" id="jenjang_id" onchange="ubahJenjangPendidikan();">
+                            <option value="" selected="true" disabled="true" hidden="true">Pilih Jenjang</option>
+                            <t t-foreach="pendidikan_list" t-as="jenjang">
+                                <option t-att-value="jenjang.id">
+                                    <t t-esc="jenjang.name"/>
+                                </option>
+                            </t>
+                        </select>
+                        <label for="jenjang_id" id="labelJenjang">Jenjang Pendidikan</label>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="mb-3 d-flex justify-content-end">
+                    <a style="background-color: #4CAF50; text-decoration: none; color: white; padding: 10px 20px; text-align: center; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer;" href="#" class="btn btn-success" id="btnSelanjutnya1">Selanjutnya</a>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <div class="container" id="containerDataDiri" style="display: none;">
+                <div style="max-width: 100%;" class="bg-white rounded mt-4 p-3 mb-5">
+                    <div class="step-indicator mb-3" style="background-color: #EAE7E7; padding: 0px 30px; display: flex; justify-content: space-between; flex-wrap: wrap;">
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Login</span>
+                        <span class="text-uppercase fw-semibold step active" style="font-size: 13px;">Data Santri</span>
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Orang Tua</span>
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Sekolah Asal</span>
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Berkas</span>
+                    </div>
+                <h4 class="fw-semibold fs-3 mb-4">Data Santri</h4>
+                <div>
+                    <div claas="row">
+                        <div class="col-md-12">
+                        <div class="fl-label">
+                        <input type="text" name="nama" id="nama" placeholder="Nama Lengkap" required="true" autocomplete="off"/>
+                        <label for="nama">Nama Lengkap</label>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-md-6">
+                        <div class="fl-label">
+                        <select required="true" name="gender" id="gender" onchange="ubahJk();">
+                            <option value="" selected="true" disabled="true" hidden="true">Pilih Jenis Kelamin</option>
+                            <option value="l">Laki - Laki</option>
+                            <option value="p">Perempuan</option>
+                        </select>
+                        <label for="gender" id="labelJk">Jenis Kelamin</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div>
+                        <label for="tanggal_lahir" style="font-size: 12px; transform: translateY(-24px);">Tgl Lahir</label>
+                        <input type="text" name="tanggal_lahir" id="tanggal_lahir" placeholder="dd / mm / yyyy" required="true" readonly="true" autocomplete="off" style="width: 100%; border: none; outline: none; border-bottom: 1.5px solid #A5A0A0; font-size: 16px; transition: border-color 0.3s; box-shadow: 0px 4px 4px -4px rgba(0, 0, 0, 0.5); cursor: default; transform: translateY(-10px);"/>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-md-6">
+                        <div class="fl-label">
+                        <input type="text" name="nisn" id="nisn" placeholder="NISN" required="true" autocomplete="off"/>
+                        <label for="nisn">NISN</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="fl-label">
+                        <input type="text" name="kota_lahir" id="kota_lahir" placeholder="Tempat Lahir" required="true" autocomplete="off"/>
+                        <label for="kota_lahir">Tempat Lahir</label>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-md-6">
+                        <div class="fl-label">
+                        <select required="true" name="provinsi_id" id="provinsi_id" onchange="ubahProvinsi();">
+                            <option value="" selected="true" disabled="true" hidden="true">Pilih Provinsi</option>
+                            <t t-foreach="request.env['cdn.ref_propinsi'].sudo().search([])" t-as="propinsi">
+                                <option t-att-value="propinsi.id" t-esc="propinsi.name" />
+                            </t>
+                        </select>
+                        <label for="provinsi_id" id="labelProvinsi">Provinsi</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="fl-label">
+                        <input type="number" name="anak_ke" id="anak_ke" placeholder="Anak Ke" required="true" autocomplete="off"/>
+                        <label for="anak_ke">Anak Ke</label>
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="row">
+                    <div class="col-md-6">
+                        <div class="fl-label">
+                        <select required="true" name="kota_id" id="kota_id" onchange="ubahKota();">
+                            <option value="" selected="true" disabled="true" hidden="true">Pilih Kabupaten/Kota</option>
+                            <t t-foreach="request.env['cdn.ref_kota'].sudo().search([])" t-as="kota">
+                                <option t-att-data-propinsi="kota.propinsi_id.id" t-att-value="kota.id" t-esc="kota.name" />
+                            </t>
+                        </select>
+                        <label for="kota_id" id="labelKota">Kabupaten/Kota</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="fl-label">
+                        <input type="number" name="jml_saudara_kandung" id="jml_saudara_kandung" placeholder="Jumlah Saudara" required="true" autocomplete="off"/>
+                        <label for="jml_saudara_kandung">Jumlah Saudara</label>
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="row">
+                    <div class="col-md-6">
+                        <div class="fl-label">
+                        <select required="true" name="kecamatan_id" id="kecamatan_id" onchange="ubahKecamatan();">
+                            <option value="" selected="true" disabled="true" hidden="true">Pilih Kecamatan</option>
+                            <t t-foreach="request.env['cdn.ref_kecamatan'].sudo().search([])" t-as="kecamatan">
+                                <option t-att-data-kota="kecamatan.kota_id.id" t-att-value="kecamatan.id" t-esc="kecamatan.name" />
+                            </t>
+                        </select>
+                        <label for="kecamatan_id" id="labelKecamatan">Kecamatan</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="fl-label">
+                        <input type="text" name="cita_cita" id="cita_cita" placeholder="Cita Cita" required="true" autocomplete="off"/>
+                        <label for="cita_cita">Cita Cita</label>
+                        </div>
+                    </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                        <div class="fl-label">
+                        <select required="true" name="golongan_darah" id="golongan_darah" onchange="ubahGolDarah();">
+                            <option value="" selected="true" disabled="true" hidden="true">Pilih Golongan Darah</option>
+                            <option value="a">A</option>
+                            <option value="b">B</option>
+                            <option value="ab">AB</option>
+                            <option value="o">O</option>
+                        </select>
+                        <label for="golongan_darah" id="labelGolDarah">Golongan Darah</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="fl-label">
+                        <select required="true" name="kewarganegaraan" id="kewarganegaraan">
+                            <option value="wni" selected="true">WNI</option>
+                            <option value="wna">WNA</option>
+                        </select>
+                        <label for="kewarganegaraan" id="labelKwAnak">Kewarganegaraan</label>
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="row">
+                    <div class="col-md-6">
+                        <div class="fl-label">
+                        <textarea name="alamat" id="alamat" rows="3" placeholder="Alamat" required="true" autocomplete="off"></textarea>
+                        <label for="alamat">Alamat</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="fl-label">
+                        <input type="text" name="nik" id="nik" placeholder="NIK" required="true" autocomplete="off"/>
+                        <label for="nik">NIK</label>
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="mb-3 d-flex justify-content-between">
+                    <a style="background-color: #4CAF50; text-decoration: none; color: white; padding: 10px 20px; text-align: center; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer;" href="#" class="btn btn-success" id="btnKembali2">Kembali</a>
+                    <a href="#" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer;" class="btn btn-success" id="btnSelanjutnya2">Selanjutnya</a>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <div class="container" style="display: none;" id="containerDataOrangTua">
+                <div style="max-width: 100%;" class="bg-white rounded mt-4 p-3 mb-5">
+                    <div class="step-indicator mb-3" style="background-color: #EAE7E7; padding: 0px 30px; display: flex; justify-content: space-between; flex-wrap: wrap;">
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Login</span>
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Santri</span>
+                        <span class="text-uppercase fw-semibold step active" style="font-size: 13px;">Data Orang Tua</span>
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Sekolah Asal</span>
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Berkas</span>
+                    </div>
+                <h4 class="fw-semibold fs-3 mb-4">Data Orang Tua</h4>
+                <div class="fl-label">
+                    <h5 class="fw-semibold mb-3">Data Ayah</h5>
+                    <div class="row">
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                        <input type="text" name="nama_ayah" id="nama_ayah" placeholder="Nama Ayah" required="true" autocomplete="off"/>
+                        <label for="nama_ayah">Nama Ayah</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                        <input type="text" name="ktp_ayah" id="ktp_ayah" placeholder="Ktp Ayah" required="true" autocomplete="off"/>
+                        <label for="ktp_ayah">Ktp Ayah</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div>
+                        <label for="tanggal_lahir_ayah" style="font-size: 12px;">Tgl Lahir Ayah</label>
+                        <input type="text" name="tanggal_lahir_ayah" id="tanggal_lahir_ayah" placeholder="dd / mm / yyyy" required="true" readonly="true" autocomplete="off" style="width: 100%; border: none; outline: none; border-bottom: 1.5px solid #A5A0A0; font-size: 16px; transition: border-color 0.3s; box-shadow: 0px 4px 4px -4px rgba(0, 0, 0, 0.5); cursor: default;"/>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                        <input type="text" name="telepon_ayah" id="telepon_ayah" placeholder="Telepon Ayah" required="true" autocomplete="off"/>
+                        <label for="telepon_ayah">Telepon Ayah</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                            <select required="true" name="pekerjaan_ayah" id="pekerjaan_ayah" onchange="ubahPekerjaanAyah();">
+                            <option value="" selected="true" disabled="true" hidden="true">Pilih Pekerjaan</option>
+                            <t t-foreach="request.env['cdn.ref_pekerjaan'].sudo().search([])" t-as="pekerjaan">
+                                <option t-att-value="pekerjaan.id" t-esc="pekerjaan.name" />
+                            </t>
+                            </select>
+                        <label for="pekerjaan_ayah" id="labelPekerjaanAyah">Pekerjaan Ayah</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                        <select required="true" name="penghasilan_ayah" id="penghasilan_ayah" onchange="ubahPenghasilanAyah();">
+                            <option value="" selected="true" disabled="true" hidden="true">Pilih</option>
+                            <option value="1juta"> &lt; Rp. 1.000.000</option>
+                            <option value="5juta">Rp. 1.000.000 - Rp. 5.000.000</option>
+                            <option value="10juta">Rp. 6.000.000 - Rp. 10.000.000</option>
+                        </select>
+                        <label for="penghasilan_ayah" id="labelPenghasilanAyah">Penghasilan Ayah</label>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                        <input type="email" name="email_ayah" id="email_ayah" placeholder="Email Ayah" required="true" autocomplete="off"/>
+                        <label for="email_ayah">Email Ayah</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                            <select required="true" name="pendidikan_ayah" id="pendidikan_ayah" onchange="ubahPendidikanAyah();">
+                            <option value="" selected="true" disabled="true" hidden="true">Pilih Pendidikan</option>
+                            <t t-foreach="request.env['cdn.ref_pendidikan'].sudo().search([])" t-as="pendidikan">
+                                <option t-att-value="pendidikan.id" t-esc="pendidikan.name" />
+                            </t>
+                            </select>
+                        <label for="pendidikan_ayah" id="labelPendidikanAyah">Pendidikan Ayah</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                        <select required="true" name="kewarganegaraan_ayah" id="kewarganegaraan_ayah">
+                            <option value="wni" selected="true">WNI</option>
+                            <option value="wna">WNA</option>
+                        </select>
+                        <label for="kewarganegaraan_ayah" id="labelKwAyah">Kewarganegaraan Ayah</label>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <div class="fl-label">
+                    <h5 class="fw-semibold mb-3">Data Ibu</h5>
+                    <div class="row">
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                        <input type="text" name="nama_ibu" id="nama_ibu" placeholder="Nama Ibu" required="true" autocomplete="off"/>
+                        <label for="nama_ibu">Nama Ibu</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                        <input type="text" name="ktp_ibu" id="ktp_ibu" placeholder="Ktp Ibu" required="true" autocomplete="off"/>
+                        <label for="ktp_ibu">Ktp Ibu</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div>
+                        <label for="tanggal_lahir_ibu" style="font-size: 12px;">Tgl Lahir Ibu</label>
+                        <input type="text" name="tanggal_lahir_ibu" id="tanggal_lahir_ibu" placeholder="dd / mm / yyyy" required="true" readonly="true" autocomplete="off" style="width: 100%; border: none; outline: none; border-bottom: 1.5px solid #A5A0A0; font-size: 16px; transition: border-color 0.3s; box-shadow: 0px 4px 4px -4px rgba(0, 0, 0, 0.5); cursor: default;"/>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                        <input type="text" name="telepon_ibu" id="telepon_ibu" placeholder="Telepon Ibu" required="true" autocomplete="off"/>
+                        <label for="telepon_ibu">Telepon Ibu</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                            
+                            <select required="true" name="pekerjaan_ibu" id="pekerjaan_ibu" onchange="ubahPekerjaanAyah();">
+                            <option value="" selected="true" disabled="true" hidden="true">Pilih Pekerjaan</option>
+                            <t t-foreach="request.env['cdn.ref_pekerjaan'].sudo().search([])" t-as="pekerjaan">
+                                <option t-att-value="pekerjaan.id" t-esc="pekerjaan.name" />
+                            </t>
+                            </select>
+                        <label for="pekerjaan_ibu" id="labelPekerjaanIbu">Pekerjaan Ibu</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                        <select required="true" name="penghasilan_ibu" id="penghasilan_ibu" onchange="ubahPenghasilanIbu();">
+                            <option value="" selected="true" disabled="true" hidden="true">Pilih</option>
+                            <option value="1juta"> &lt; Rp. 1.000.000</option>
+                            <option value="5juta">Rp. 1.000.000 - Rp. 5.000.000</option>
+                            <option value="10juta">Rp. 6.000.000 - Rp. 10.000.000</option>
+                        </select>
+                        <label for="penghasilan_ibu" id="labelPenghasilanIbu">Penghasilan Ibu</label>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                        <input type="email" name="email_ibu" id="email_ibu" placeholder="Email Ibu" required="true" autocomplete="off"/>
+                        <label for="email_ibu">Email Ibu</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                            <option value="" selected="true" disabled="true" hidden="true">Pilih Pendidikan</option>
+                            <select required="true" name="pendidikan_ibu" id="pendidikan_ibu" onchange="ubahPendidikanIbu();">
+                            <t t-foreach="request.env['cdn.ref_pendidikan'].sudo().search([])" t-as="pendidikan">
+                                <option t-att-value="pendidikan.id" t-esc="pendidikan.name" />
+                            </t>
+                            </select>
+                        <label for="pendidikan_ibu" id="labelPendidikanIbu">Pendidikan Ibu</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                        <select required="true" name="kewarganegaraan_ibu" id="kewarganegaraan_ibu">
+                            <option value="wni" selected="true">WNI</option>
+                            <option value="wna">WNA</option>
+                        </select>
+                        <label for="kewarganegaraan_ibu" id="labelKwIbu">Kewarganegaraan Ibu</label>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <div class="fl-label">
+                    <h5 class="fw-semibold mb-3">Data Wali (opsional)</h5>
+                    <div class="row">
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                        <input type="text" name="wali_nama" id="wali_nama" placeholder="Nama Wali" autocomplete="off"/>
+                        <label for="wali_nama">Nama Wali</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                        <input type="text" name="wali_tmp_lahir" id="wali_tmp_lahir" placeholder="Tempat Lahir" autocomplete="off"/>
+                        <label for="wali_tmp_lahir">Tempat Lahir</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div>
+                        <label for="wali_tgl_lahir" style="font-size: 12px;">Tgl Lahir Wali</label>
+                        <input type="text" name="wali_tgl_lahir" id="wali_tgl_lahir" placeholder="dd / mm / yyyy" required="true" readonly="true" autocomplete="off" style="width: 100%; border: none; outline: none; border-bottom: 1.5px solid #A5A0A0; font-size: 16px; transition: border-color 0.3s; box-shadow: 0px 4px 4px -4px rgba(0, 0, 0, 0.5); cursor: default;"/>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                        <input type="text" name="wali_telp" id="wali_telp" placeholder="Telepon Wali" autocomplete="off"/>
+                        <label for="wali_telp">Telepon Wali</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                        <input type="text" name="wali_hubungan" id="wali_hubungan" placeholder="Hubungan Dengan Santri" autocomplete="off"/>
+                        <label for="wali_hubungan">Hubungan Dengan Santri</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="fl-label">
+                        <input type="email" name="wali_email" id="wali_email" placeholder="Email Wali" autocomplete="off"/>
+                        <label for="wali_email">Email Wali</label>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="mb-3 d-flex justify-content-between">
+                    <a href="#" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer;" class="btn btn-success" id="btnKembali3">Kembali</a>
+                    <a style="background-color: #4CAF50; text-decoration: none; color: white; padding: 10px 20px; text-align: center; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer;" href="#" class="btn btn-success" id="btnSelanjutnya3">Selanjutnya</a>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <div class="container" id="containerDataSekolahAsal" style="display: none;">
+                <div style="max-width: 100%;" class="bg-white rounded mt-4 p-3 mb-5">
+                    <div class="step-indicator mb-3" style="background-color: #EAE7E7; padding: 0px 30px; display: flex; justify-content: space-between; flex-wrap: wrap;">
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Login</span>
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Santri</span>
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Orang Tua</span>
+                        <span class="text-uppercase fw-semibold step active" style="font-size: 13px;">Data Sekolah Asal</span>
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Berkas</span>
+                    </div>
+                <h4 class="fw-semibold fs-3 mb-4">Data Sekolah Asal</h4>
+                <div>
+                    <div class="row">
+                    <div class="col-md-6">
+                        <div class="fl-label">
+                        <input type="text" name="asal_sekolah" id="asal_sekolah" placeholder="Asal Sekolah" required="true" autocomplete="off"/>
+                        <label for="asal_sekolah">Asal Sekolah</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="fl-label">
+                        <input type="text" name="telp_asal_sek" id="telp_asal_sek" placeholder="Telepon Sekolah" required="true" autocomplete="off"/>
+                        <label for="telp_asal_sek">Telepon Sekolah</label>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-md-6">
+                        <div class="fl-label">
+                        <select required="true" name="status_sekolah_asal" id="status_sekolah_asal" onchange="ubahStatusSekolah();">
+                            <option value="" selected="true" disabled="true" hidden="">Pilih Status</option>
+                            <option value="negeri">Negeri</option>
+                            <option value="swasta">Swasta</option>
+                        </select>
+                        <label for="status_sekolah_asal" id="labelStatusSekolah">Status Sekolah Asal</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="fl-label">
+                        <textarea name="alamat_asal_sek" id="alamat_asal_sek" rows="3" placeholder="Alamat Sekolah Asal" required="true" autocomplete="off"></textarea>
+                        <label for="alamat_asal_sek">Alamat Sekolah Asal</label>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-md-12">
+                        <div class="fl-label">
+                        <input type="text" name="npsn" id="npsn" placeholder="NPSN Sekolah" required="true" autocomplete="off"/>
+                        <label for="npsn">NPSN Sekolah</label>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                    <a style="background-color: #4CAF50; text-decoration: none; color: white; padding: 10px 20px; text-align: center; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer;" href="#" class="btn btn-success" id="btnKembali4">Kembali</a>
+                    <a style="background-color: #4CAF50; text-decoration: none; color: white; padding: 10px 20px; text-align: center; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer;" href="#" class="btn btn-success" id="btnSelanjutnya4">Selanjutnya</a>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <div class="container" id="containerDataBerkas" style="display: none;">
+                    <div style="max-width: 100%;" class="bg-white rounded mt-5 p-3 mb-5">
+                    <div class="step-indicator mb-3" style="background-color: #EAE7E7; padding: 0px 30px; display: flex; justify-content: space-between; flex-wrap: wrap;">
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Login</span>
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Santri</span>
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Orang Tua</span>
+                        <span class="text-uppercase fw-semibold step" style="font-size: 13px;">Data Sekolah Asal</span>
+                        <span class="text-uppercase fw-semibold step active" style="font-size: 13px;">Data Berkas</span>
+                    </div>
+                    <h4 class="fw-semibold fs-3 mb-4">Data Berkas</h4>
+                    <div>
+                        <div class="row">
+                        <div class="col-md-6">
+                            <div class="fl-label">
+                            <input type="file" name="akta_kelahiran" id="akta_kelahiran" placeholder="Akta Kelahiran" required="true" autocomplete="off" onchange="ubahAkta();"/>
+                            <label for="akta_kelahiran" id="labelAkta">Akta Kelahiran</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="fl-label">
+                            <input type="file" name="kartu_keluarga" id="kartu_keluarga" placeholder="Kartu Keluarga" required="true" autocomplete="off" onchange="ubahKK();"/>
+                            <label for="kartu_keluarga" id="labelKK">Kartu Keluarga</label>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="row">
+                        <div class="col-md-6">
+                            <div class="fl-label">
+                            <input type="file" name="ijazah" id="ijazah" placeholder="Ijazah" required="true" autocomplete="off" onchange="ubahIjazah();"/>
+                            <label for="ijazah" id="labelIjazah">Ijazah</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="fl-label">
+                            <input type="file" name="pas_foto" id="pas_foto" placeholder="Pas Foto" required="true" autocomplete="off" onchange="ubahPasFoto();"/>
+                            <label for="pas_foto" id="labelPasFoto">Pas Foto</label>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="row">
+                        <div class="col-md-6">
+                            <div class="fl-label">
+                            <input type="file" name="raport_terakhir" id="raport_terakhir" placeholder="Raport Terakhir" required="true" autocomplete="off" onchange="ubahRaport();"/>
+                            <label for="raport_terakhir" id="labelRaport">Raport Terakhir</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="fl-label">
+                            <input type="file" name="surat_kesehatan" id="surat_kesehatan" placeholder="Surat Kesehatan" required="true" autocomplete="off" onchange="ubahSuratKesehatan();"/>
+                            <label for="surat_kesehatan" id="labelSuratKesehatan">Surat Kesehatan</label>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="row">
+                        <div class="col-md-6">
+                            <div class="fl-label">
+                            <input type="file" name="ktp_ortu" id="ktp_ortu" placeholder="KTP Orang Tua" required="true" autocomplete="off" onchange="ubahKtp();"/>
+                            <label for="ktp_ortu" id="labelKTP">KTP Orang Tua</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="fl-label">
+                            <input type="file" name="skhun" id="skhun" placeholder="SKHUN" required="true" autocomplete="off" onchange="ubahSKHUN();"/>
+                            <label for="skhun" id="labelSKHUN">SKHUN</label>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                        <a style="text-decoration: none; color: white; padding: 10px 20px; text-align: center; display: inline-block; font-size: 16px; border-radius: 5px; cursor: pointer;" href="#" class="btn btn-success" id="btnKembali5">Kembali</a>
+                        <button style="cursor: pointer; padding: 10px 20px; text-align: center; color: white; display: inline-block; font-size: 16px; border-radius: 5px; border: none;" type="submit" class="btn btn-primary daftar" disabled="true">Daftar</button>
+                        </div>   
+                    </div>
+                    </div>
+                </div>
+
+            </form>
+            <footer class="p-2" style="display: flex; justify-content: space-between; flex-wrap: wrap; color: white !important;">
+            	<div class="ms-5">
+            		<ul style="list-style-type: none; display: flex; text-transform: uppercase; font-size: 13px;" class="fw-semibold">
+            			<li><a href="/psb" class="me-4" style="text-decoration: none; color: white;">Home</a></li>
+            			<li><a href="/beranda" class="me-4" style="text-decoration: none; color: white;" target="_blank">Info Pondok</a></li>
+            			<li><a href="https://drive.google.com/drive/mobile/folders/1EYat5411joyoOmH_DkJ3g2DeJKgyyuBQ?usp=share_link&amp;fbclid=IwY2xjawGflGlleHRuA2FlbQIxMQABHTusVv9hD3VRDSLW9-671QhOL86e3KMv30smsAYW0DHkkWf7zwPlcBlbeA_aem_XXofAY-ay0syx043L5BLvw" class="me-4" style="text-decoration: none; color: white;" target="_blank">Brosur</a></li>
+            			<li><a href="" class="me-4" style="text-decoration: none; color: white;">Panduan</a></li>
+            		</ul>
+            	</div>
+            	<div class="me-5">
+            		<p class="text-center mt-1 text-white">© 2024 TIM IT PPIB</p>
+            	</div>
+            </footer>
+            </div>
+
+            <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+            <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+            <script type="text/javascript">
+            btnSelanjutnya1 = document.getElementById("btnSelanjutnya1");
+            btnSelanjutnya2 = document.getElementById("btnSelanjutnya2");
+            btnSelanjutnya3 = document.getElementById("btnSelanjutnya3");
+            btnSelanjutnya4 = document.getElementById("btnSelanjutnya4");
+            btnKembali2 = document.getElementById("btnKembali2");
+            btnKembali3 = document.getElementById("btnKembali3");
+            btnKembali4 = document.getElementById("btnKembali4");
+            btnKembali5 = document.getElementById("btnKembali5");
+            containerDataUsername = document.getElementById("containerDataUsername");
+            containerDataDiri = document.getElementById("containerDataDiri");
+            containerDataOrangTua = document.getElementById("containerDataOrangTua");
+            containerDataSekolahAsal = document.getElementById("containerDataSekolahAsal");
+            containerDataBerkas = document.getElementById("containerDataBerkas");
+
+            btnSelanjutnya1.addEventListener("click", () => {
+                containerDataDiri.style.display = "block";
+                containerDataUsername.style.display = "none";
+            });
+
+            btnSelanjutnya2.addEventListener("click", () => {
+                containerDataOrangTua.style.display = "block";
+                containerDataDiri.style.display = "none";
+            });
+
+            btnSelanjutnya3.addEventListener("click", () => {
+                containerDataSekolahAsal.style.display = "block";
+                containerDataOrangTua.style.display = "none";
+            });
+
+            btnSelanjutnya4.addEventListener("click", () => {
+                containerDataBerkas.style.display = "block";
+                containerDataSekolahAsal.style.display = "none";
+            });
+
+            btnKembali2.addEventListener("click", () => {
+                containerDataUsername.style.display = "block";
+                containerDataDiri.style.display = "none";
+            });
+
+            btnKembali3.addEventListener("click", () => {
+                containerDataDiri.style.display = "block";
+                containerDataOrangTua.style.display = "none";
+            });
+
+            btnKembali4.addEventListener("click", () => {
+                containerDataOrangTua.style.display = "block";
+                containerDataSekolahAsal.style.display = "none";
+            });
+
+            btnKembali5.addEventListener("click", () => {
+                containerDataSekolahAsal.style.display = "block";
+                containerDataBerkas.style.display = "none";
+            });
+
+            const input1 = document.querySelectorAll('#containerDataUsername input');
+            const select1 = document.querySelectorAll('#containerDataUsername select');
+
+            const lastInput1 = input1[input1.length - 1];
+            const lastSelect1 = select1[select1.length - 1];
+
+            input1.forEach(e => {
+                e.addEventListener('input', () => {
+                if( e.required &amp;&amp; !e.value &amp;&amp; !lastInput1.value &amp;&amp; !lastSelect1.value ) {
+                    btnSelanjutnya1.classList.add('disabled');
+                }else if( e.required &amp;&amp; e.value &amp;&amp; lastInput1.value &amp;&amp; lastSelect1.value) {
+                    btnSelanjutnya1.classList.remove('disabled');
+                }
+                })
+                
+            })
+
+            const input2 = document.querySelectorAll('#containerDataDiri input');
+            const select2 = document.querySelectorAll('#containerDataDiri select');
+            const textarea2 = document.querySelectorAll('#containerDataDiri textarea');
+
+            const lastInput2 = input2[input2.length - 1];
+            const lastSelect2 = select2[select2.length - 1];
+            const lastTextarea2 = textarea2[textarea2.length - 1];
+
+            input2.forEach(e => {
+                e.addEventListener('input', () => {
+                if( e.required &amp;&amp; !e.value &amp;&amp; !lastInput2.value &amp;&amp; !lastSelect2.value &amp;&amp; !lastTextarea2.value ) {
+                    btnSelanjutnya2.classList.add('disabled');
+                }else if( e.required &amp;&amp; e.value &amp;&amp; lastInput2.value &amp;&amp; lastSelect2.value &amp;&amp; lastTextarea2) {
+                    btnSelanjutnya2.classList.remove('disabled');
+                }
+                })
+                
+            })
+
+            const input3 = document.querySelectorAll('#containerDataOrangTua input[required]');
+            const select3 = document.querySelectorAll('#containerDataOrangTua select');
+
+            const lastInput3 = input3[input3.length - 1];
+            const lastSelect3 = select3[select3.length - 1];
+
+            input3.forEach(e => {
+                e.addEventListener('input', () => {
+                if( e.required &amp;&amp; !e.value &amp;&amp; !lastInput3.value &amp;&amp; !lastSelect3.value ) {
+                    btnSelanjutnya3.classList.add('disabled');
+                }else if( e.required &amp;&amp; e.value &amp;&amp; lastInput3.value &amp;&amp; lastSelect3.value) {
+                    btnSelanjutnya3.classList.remove('disabled');
+                }
+                })
+                
+            })
+
+            const input4 = document.querySelectorAll('#containerDataSekolahAsal input');
+            const select4 = document.querySelectorAll('#containerDataSekolahAsal select');
+            const textarea4 = document.querySelectorAll('#containerDataSekolahAsal textarea');
+
+            const lastInput4 = input4[input4.length - 1];
+            const lastSelect4 = select4[select4.length - 1];
+            const lastTextarea4 = textarea4[textarea4.length - 1];
+
+            input4.forEach(e => {
+                e.addEventListener('input', () => {
+                if( e.required &amp;&amp; !e.value &amp;&amp; !lastInput4.value &amp;&amp; !lastSelect4.value &amp;&amp; !lastTextarea4.value ) {
+                    btnSelanjutnya4.classList.add('disabled');
+                }else if( e.required &amp;&amp; e.value &amp;&amp; lastInput4.value &amp;&amp; lastSelect4.value &amp;&amp; lastTextarea4) {
+                    btnSelanjutnya4.classList.remove('disabled');
+                }
+                })
+                
+            })
+
+            const input5 = document.querySelectorAll('#containerDataBerkas input');
+            const lastInput5 = input5[input5.length - 1];
+            const buttonSubmit = document.querySelector('#containerDataBerkas button[type=submit]');
+
+            input5.forEach(e => {
+                e.addEventListener('input', () => {
+                if( e.required &amp;&amp; !e.value &amp;&amp; !lastInput5.value ) {
+                    buttonSubmit.setAttribute('disabled', '');
+                }else if( e.required &amp;&amp; e.value &amp;&amp; lastInput5.value ) {
+                    buttonSubmit.removeAttribute('disabled');
+                }
+                })
+                
+            })
+
+            function ubahJenjangPendidikan() {
+                const selectNull = document.getElementById('jenjang_id').value;
+                const label = document.getElementById('labelJenjang');
+
+                if( !selectNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahJk() {
+                const selectNull = document.getElementById('gender').value;
+                const label = document.getElementById('labelJk');
+
+                if( !selectNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahProvinsi() {
+                const selectNull = document.getElementById('provinsi_id').value;
+                const label = document.getElementById('labelProvinsi');
+
+                if( !selectNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahKota() {
+                const selectNull = document.getElementById('kota_id').value;
+                const label = document.getElementById('labelKota');
+
+                if( !selectNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahKecamatan() {
+                const selectNull = document.getElementById('kecamatan_id').value;
+                const label = document.getElementById('labelKecamatan');
+
+                if( !selectNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahGolDarah() {
+                const selectNull = document.getElementById('golongan_darah').value;
+                const label = document.getElementById('labelGolDarah');
+
+                if( !selectNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahPekerjaanAyah() {
+                const selectNull = document.getElementById('pekerjaan_ayah').value;
+                const label = document.getElementById('labelPekerjaanAyah');
+
+                if( !selectNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahPenghasilanAyah() {
+                const selectNull = document.getElementById('penghasilan_ayah').value;
+                const label = document.getElementById('labelPenghasilanAyah');
+
+                if( !selectNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahPendidikanAyah() {
+                const selectNull = document.getElementById('pendidikan_ayah').value;
+                const label = document.getElementById('labelPendidikanAyah');
+
+                if( !selectNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahPekerjaanIbu() {
+                const selectNull = document.getElementById('pekerjaan_ibu').value;
+                const label = document.getElementById('labelPekerjaanIbu');
+
+                if( !selectNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahPenghasilanIbu() {
+                const selectNull = document.getElementById('penghasilan_ibu').value;
+                const label = document.getElementById('labelPenghasilanIbu');
+
+                if( !selectNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahPendidikanIbu() {
+                const selectNull = document.getElementById('pendidikan_ibu').value;
+                const label = document.getElementById('labelPendidikanIbu');
+
+                if( !selectNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahStatusSekolah() {
+                const selectNull = document.getElementById('status_sekolah_asal').value;
+                const label = document.getElementById('labelStatusSekolah');
+
+                if( !selectNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahAkta() {
+                const fileNull = document.getElementById('akta_kelahiran').value;
+                const label = document.getElementById('labelAkta');
+
+                if( !fileNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahKK() {
+                const fileNull = document.getElementById('kartu_keluarga').value;
+                const label = document.getElementById('labelKK');
+
+                if( !fileNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahIjazah() {
+                const fileNull = document.getElementById('ijazah').value;
+                const label = document.getElementById('labelIjazah');
+
+                if( !fileNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahPasFoto() {
+                const fileNull = document.getElementById('pas_foto').value;
+                const label = document.getElementById('labelPasFoto');
+
+                if( !fileNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahRaport() {
+                const fileNull = document.getElementById('raport_terakhir').value;
+                const label = document.getElementById('labelRaport');
+
+                if( !fileNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahSuratKesehatan() {
+                const fileNull = document.getElementById('surat_kesehatan').value;
+                const label = document.getElementById('labelSuratKesehatan');
+
+                if( !fileNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahKtp() {
+                const fileNull = document.getElementById('ktp_ortu').value;
+                const label = document.getElementById('labelKTP');
+
+                if( !fileNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            function ubahSKHUN() {
+                const fileNull = document.getElementById('skhun').value;
+                const label = document.getElementById('labelSKHUN');
+
+                if( !fileNull == "") {
+                label.style.color = '#000';
+                }
+
+            }
+
+            $(document).ready(function() {
+                // Pengaturan terjemahan manual untuk bahasa Indonesia
+                $.datepicker.regional['id'] = {
+                    closeText: 'Tutup',
+                    prevText: 'Sebelumnya',
+                    nextText: 'Berikutnya',
+                    currentText: 'Hari Ini',
+                    monthNames: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+                    monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'],
+                    dayNames: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
+                    dayNamesShort: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                    dayNamesMin: ['Mi', 'Se', 'Sa', 'Ra', 'Ka', 'Ju', 'Sa'],
+                    weekHeader: 'Ming',
+                    dateFormat: 'dd/mm/yy',
+                    firstDay: 0,
+                    isRTL: false,
+                    showMonthAfterYear: false,
+                    yearSuffix: ''
+                };
+
+                $.datepicker.setDefaults($.datepicker.regional['id']);
+
+                // Inisialisasi Datepicker
+                $("#tanggal_lahir").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "1900:" + new Date().getFullYear(),
+                    maxDate: new Date()
+                });
+                $("#tanggal_lahir_ayah").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "1900:" + new Date().getFullYear(),
+                    maxDate: new Date()
+                });
+                $("#tanggal_lahir_ibu").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "1900:" + new Date().getFullYear(),
+                    maxDate: new Date()
+                });
+                $("#wali_tgl_lahir").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "1900:" + new Date().getFullYear(),
+                    maxDate: new Date()
+                });
+            });
+
+            const provinsiSelect = document.getElementById('provinsi_id');
+            const kotaSelect = document.getElementById('kota_id');
+            const kecamatanSelect = document.getElementById('kecamatan_id');
+
+            // Filter kota berdasarkan provinsi
+            provinsiSelect.addEventListener('change', function () {
+                const selectedProvinsi = this.value;
+
+                // Filter kota
+                [...kotaSelect.options].forEach(option => {
+                    if (option.value === "" || option.dataset.propinsi === selectedProvinsi) {
+                        option.classList.remove('d-none');
+                    } else {
+                        option.classList.add('d-none');
+                    }
+                });
+
+                // Reset pilihan kota
+                kotaSelect.value = "";
+                kecamatanSelect.value = "";
+            });
+
+            // Filter kecamatan berdasarkan kota
+            kotaSelect.addEventListener('change', function () {
+                const selectedKota = this.value;
+
+                // Filter kecamatan
+                [...kecamatanSelect.options].forEach(option => {
+                    if (option.value === "" || option.dataset.kota === selectedKota) {
+                        option.classList.remove('d-none');
+                    } else {
+                        option.classList.add('d-none');
+                    }
+                });
+
+                // Reset pilihan kecamatan
+                kecamatanSelect.value = "";
+            });
+
+            // Cari elemen body dengan class spesifik
+            const bodyElement = document.querySelector('body.o_body_html.container.overflow-x-hidden');
+            
+            // Jika elemen ditemukan, hapus class "container"
+            if (bodyElement) {
+                bodyElement.classList.remove('o_body_html');
+                bodyElement.classList.remove('container');
+            }
+            </script>
+        </t>
+    </template>
+
+</odoo>
